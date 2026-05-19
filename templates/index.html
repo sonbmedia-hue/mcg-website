@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+MCG : Music Copyrights Generator
+</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#0f0f0f;
+    color:white;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+}
+
+.background{
+
+    position:absolute;
+    width:100%;
+    height:100%;
+
+    background-image:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f');
+
+    background-size:cover;
+    background-position:center;
+
+    filter:brightness(0.25);
+
+    z-index:-1;
+}
+
+.container{
+
+    width:450px;
+
+    background:rgba(15,15,15,0.92);
+
+    padding:40px;
+
+    border-radius:20px;
+
+    backdrop-filter:blur(10px);
+
+    box-shadow:0 0 30px rgba(0,0,0,0.5);
+}
+
+h1{
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+    color:#4CAF50;
+
+    font-size:32px;
+}
+
+.subtitle{
+
+    text-align:center;
+
+    margin-bottom:35px;
+
+    color:#cccccc;
+
+    font-size:15px;
+}
+
+input{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-bottom:20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#1f1f1f;
+
+    color:white;
+
+    font-size:15px;
+}
+
+input:focus{
+
+    outline:none;
+
+    border:2px solid #4CAF50;
+}
+
+button{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#2E7D32;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+button:hover{
+
+    background:#43A047;
+}
+
+.footer{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    color:#888;
+
+    font-size:12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="container">
+
+<h1>
+MCG
+</h1>
+
+<div class="subtitle">
+Music Copyrights Generator
+</div>
+
+<form method="POST">
+
+<input
+type="text"
+name="song_name"
+placeholder="Song Name"
+required
+>
+
+<input
+type="text"
+name="owner"
+placeholder="Owner Name"
+required
+>
+
+<input
+type="text"
+name="qr_link"
+placeholder="QR Verification Link"
+required
+>
+
+<button type="submit">
+Generate Certificate
+</button>
+
+</form>
+
+<div class="footer">
+MCG © 2026
+</div>
+
+</div>
+
+</body>
+
+</html>
