@@ -13,18 +13,21 @@ from datetime import datetime
 import uuid
 import os
 
+# FLASK APP
 app = Flask(__name__)
 
 # CREATE OUTPUT FOLDER
 os.makedirs("output", exist_ok=True)
 
 
+# HOME PAGE
 @app.route("/", methods=["GET", "POST"])
 def home():
 
+    # WHEN USER SUBMITS FORM
     if request.method == "POST":
 
-        # FORM DATA
+        # GET FORM DATA
         song_name = request.form["song_name"]
         owner = request.form["owner"]
         qr_link = request.form["qr_link"]
@@ -73,7 +76,7 @@ def home():
             PAGE_HEIGHT - 40
         )
 
-        # RESET TEXT COLOR
+        # TEXT COLOR
         c.setFillColor(HexColor("#000000"))
 
         # HEADER
@@ -214,14 +217,19 @@ def home():
         # SAVE PDF
         c.save()
 
-        # RETURN DOWNLOAD
+        # RETURN PDF DOWNLOAD
         return send_file(
             output_file,
             as_attachment=True
         )
 
+    # LOAD WEBSITE
     return render_template("index.html")
 
 
+# RUN FLASK
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=10000
+    )
