@@ -21,6 +21,7 @@ app = Flask(__name__)
 
 # CREATE OUTPUT FOLDER
 os.makedirs("output", exist_ok=True)
+os.makedirs("uploads", exist_ok=True)
 
 # DATABASE SETUP
 conn = sqlite3.connect(
@@ -71,6 +72,9 @@ def home():
 
         lyrics = request.form["lyrics"]
 
+        # MUSIC FILE
+        music_file = request.files["music_file"]
+
         # AUTO TIMESTAMP
         timestamp = datetime.now().strftime(
             "%m/%d/%Y %I:%M %p"
@@ -86,6 +90,63 @@ def home():
         lyrics_hash = hashlib.sha256(
             lyrics.encode()
         ).hexdigest()
+
+        # SAVE MUSIC FILE
+        filename = music_file.filename
+
+        music_path = os.path.join(
+            "uploads",
+            filename
+        )
+
+        music_file.save(music_path)
+
+        # AUDIO HASH
+        with open(music_path, "rb") as f:
+
+            audio_bytes = f.read()
+
+        audio_hash = hashlib.sha256(
+            audio_bytes
+        ).hexdigest()
+
+        # CHECK FOR DUPLICATE AUDIO
+        cursor.execute(
+
+            "SELECT * FROM certificates WHERE audio_hash=?",
+
+            (audio_hash,)
+        )
+
+        existing_audio = cursor.fetchone()
+
+        if existing_audio:
+
+            return """
+
+            <html>
+
+            <body style='
+            background:#0f0f0f;
+            color:white;
+            font-family:Arial;
+            padding:60px;
+            '>
+
+            <h1 style='color:red;'>
+            DUPLICATE AUDIO DETECTED
+            </h1>
+
+            <p>
+            This audio fingerprint already exists
+            in the PRM registry.
+            </p>
+
+            </body>
+
+            </html>
+
+            """
 
         # SAFE FILE NAME
         safe_name = song_name.replace(" ", "_")
