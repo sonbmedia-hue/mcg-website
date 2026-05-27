@@ -453,13 +453,12 @@ def home():
 
 
 # VERIFICATION PAGE
+# VERIFICATION PAGE
 @app.route("/verify/<token>")
 def verify(token):
 
     cursor.execute(
-
         "SELECT * FROM certificates WHERE token_id=?",
-
         (token,)
     )
 
@@ -468,121 +467,209 @@ def verify(token):
     if certificate:
 
         return f"""
+<!DOCTYPE html>
+<html lang="en">
 
-        <html>
+<head>
 
-        <head>
+<meta charset="UTF-8">
 
-        <title>
-        PRM Verification
-        </title>
+<title>PRM Verification</title>
 
-        <style>
+<style>
 
-        body{{
-            background:#0f0f0f;
-            color:white;
-            font-family:Arial;
-            padding:60px;
-        }}
+body{{
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+    padding:40px;
+}}
 
-        .card{{
-            max-width:800px;
-            margin:auto;
-            background:#1b1b1b;
-            padding:40px;
-            border-radius:20px;
-        }}
+.card{{
+    max-width:900px;
+    margin:auto;
+    background:#1b1b1b;
+    padding:45px;
+    border-radius:24px;
+}}
 
-        h1{{
-            color:#4CAF50;
-        }}
+.logo{{
+    font-size:42px;
+    color:#4CAF50;
+    font-weight:bold;
+    margin-bottom:10px;
+}}
 
-        .verified{{
-            color:#4CAF50;
-            font-size:24px;
-            font-weight:bold;
-            margin-bottom:25px;
-        }}
+.subtitle{{
+    color:#999;
+    margin-bottom:35px;
+}}
 
-        .item{{
-            margin-bottom:18px;
-            line-height:1.6;
-        }}
+.verified{{
+    background:#16351d;
+    color:#4CAF50;
+    padding:18px;
+    border-radius:14px;
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:35px;
+    text-align:center;
+}}
 
-        </style>
+.section{{
+    margin-bottom:25px;
+}}
 
-        </head>
+.label{{
+    color:#4CAF50;
+    margin-bottom:8px;
+    font-size:14px;
+}}
 
-        <body>
+.value{{
+    background:#242424;
+    padding:18px;
+    border-radius:12px;
+    word-wrap:break-word;
+}}
 
-        <div class="card">
+.hash{{
+    font-size:12px;
+    color:#ccc;
+}}
 
-        <h1>
-        PRM Verification Portal
-        </h1>
+.footer{{
+    text-align:center;
+    margin-top:40px;
+    color:#666;
+}}
 
-        <div class="verified">
-        ✅ VERIFIED REGISTRATION
-        </div>
+</style>
 
-        <div class="item">
-        <strong>Song:</strong>
-        {certificate[1]}
-        </div>
+</head>
 
-        <div class="item">
-        <strong>Owner:</strong>
-        {certificate[2]}
-        </div>
+<body>
 
-        <div class="item">
-        <strong>Timestamp:</strong>
-        {certificate[4]}
-        </div>
+<div class="card">
 
-        <div class="item">
-        <strong>Token ID:</strong>
-        {certificate[5]}
-        </div>
+<div class="logo">
+PRM
+</div>
 
-        <div class="item">
-        <strong>Lyrics Hash:</strong><br>
-        {certificate[6]}
-        </div>
+<div class="subtitle">
+Protection Rights Management Verification Portal
+</div>
 
-        <div class="item">
-        <strong>Audio Hash:</strong><br>
-        {certificate[7]}
-        </div>
+<div class="verified">
+✅ VERIFIED REGISTRATION
+</div>
 
-        </div>
+<div class="section">
 
-        </body>
+<div class="label">
+SONG TITLE
+</div>
 
-        </html>
+<div class="value">
+{certificate[1]}
+</div>
 
-        """
+</div>
+
+<div class="section">
+
+<div class="label">
+RIGHTS OWNER
+</div>
+
+<div class="value">
+{certificate[2]}
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="label">
+REGISTRATION TIMESTAMP
+</div>
+
+<div class="value">
+{certificate[4]}
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="label">
+TOKEN ID
+</div>
+
+<div class="value hash">
+{certificate[5]}
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="label">
+LYRICS HASH
+</div>
+
+<div class="value hash">
+{certificate[6]}
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="label">
+AUDIO HASH
+</div>
+
+<div class="value hash">
+{certificate[7]}
+</div>
+
+</div>
+
+<div class="footer">
+PRM © 2026 — Protection Rights Management
+</div>
+
+</div>
+
+</body>
+
+</html>
+"""
 
     return """
+<!DOCTYPE html>
+<html>
 
-    <html>
+<body style="
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+padding:60px;
+">
 
-    <body style="background:black;color:white;font-family:Arial;padding:60px;">
+<h1 style="color:red;">
+INVALID CERTIFICATE
+</h1>
 
-    <h1 style="color:red;">
-    INVALID CERTIFICATE
-    </h1>
+<p>
+This PRM registration could not be verified.
+</p>
 
-    <p>
-    This PRM registration could not be verified.
-    </p>
+</body>
 
-    </body>
-
-    </html>
-
-    """
+</html>
+"""
 
 
 # RUN SERVER
