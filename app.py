@@ -68,8 +68,6 @@ def home():
 
         owner = request.form["owner"]
 
-        qr_link = request.form["qr_link"]
-
         lyrics = request.form["lyrics"]
 
         # AUTO TIMESTAMP
@@ -79,6 +77,9 @@ def home():
 
         # TOKEN ID
         token_id = uuid.uuid4().hex
+
+        # AUTO VERIFICATION LINK
+        qr_link = f"https://mcg-website.onrender.com/verify/{token_id}"
 
         # LYRICS HASH
         lyrics_hash = hashlib.sha256(
@@ -356,7 +357,133 @@ def home():
     # LOAD WEBSITE
     return render_template("index.html")
 
+# VERIFICATION PAGE
+@app.route("/verify/<token>")
 
+def verify(token):
+
+    cursor.execute(
+
+        "SELECT * FROM certificates WHERE token_id=?",
+
+        (token,)
+    )
+
+    certificate = cursor.fetchone()
+
+    if certificate:
+
+        return f"""
+
+        <html>
+
+        <head>
+
+        <title>
+        PRM Verification
+        </title>
+
+        <style>
+
+        body{{
+            background:#0f0f0f;
+            color:white;
+            font-family:Arial;
+            padding:60px;
+        }}
+
+        .card{{
+            max-width:800px;
+            margin:auto;
+            background:#1b1b1b;
+            padding:40px;
+            border-radius:20px;
+        }}
+
+        h1{{
+            color:#4CAF50;
+        }}
+
+        .verified{{
+            color:#4CAF50;
+            font-size:24px;
+            font-weight:bold;
+            margin-bottom:25px;
+        }}
+
+        .item{{
+            margin-bottom:18px;
+            line-height:1.6;
+        }}
+
+        </style>
+
+        </head>
+
+        <body>
+
+        <div class="card">
+
+        <h1>
+        PRM Verification Portal
+        </h1>
+
+        <div class="verified">
+        ✅ VERIFIED REGISTRATION
+        </div>
+
+        <div class="item">
+        <strong>Song:</strong>
+        {certificate[1]}
+        </div>
+
+        <div class="item">
+        <strong>Owner:</strong>
+        {certificate[2]}
+        </div>
+
+        <div class="item">
+        <strong>Timestamp:</strong>
+        {certificate[4]}
+        </div>
+
+        <div class="item">
+        <strong>Token ID:</strong>
+        {certificate[5]}
+        </div>
+
+        <div class="item">
+        <strong>Lyrics Hash:</strong><br>
+        {certificate[6]}
+        </div>
+
+        </div>
+
+        </body>
+
+        </html>
+
+        """
+
+    return """
+
+    <html>
+
+    <body style="background:black;color:white;font-family:Arial;padding:60px;">
+
+    <h1 style="color:red;">
+    INVALID CERTIFICATE
+    </h1>
+
+    <p>
+    This PRM registration could not be verified.
+    </p>
+
+    </body>
+
+    </html>
+
+    """
 # RUN SERVER
 if __name__ == "__main__":
     app.run(
