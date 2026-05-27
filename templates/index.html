@@ -322,7 +322,13 @@ secure timestamp verification and digital certification.
 Protect. Verify. Own.
 </div>
 
-<form method="POST">
+<input
+type="file"
+name="music_file"
+accept=".mp3,.wav,.flac"
+required
+>
+<form method="POST" enctype="multipart/form-data">
 
 <input
 type="text"
