@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, send_file
 
-from werkzeug.utils import secure_filename
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor
@@ -8,6 +7,8 @@ from reportlab.lib.colors import HexColor
 from reportlab.graphics.barcode import qr
 from reportlab.graphics.shapes import Drawing
 from reportlab.graphics import renderPDF
+
+from werkzeug.utils import secure_filename
 
 from datetime import datetime
 
@@ -19,8 +20,9 @@ import os
 # FLASK APP
 app = Flask(__name__)
 
-# CREATE OUTPUT FOLDER
+# CREATE FOLDERS
 os.makedirs("output", exist_ok=True)
+
 os.makedirs("uploads", exist_ok=True)
 
 # DATABASE SETUP
@@ -31,6 +33,7 @@ conn = sqlite3.connect(
 
 cursor = conn.cursor()
 
+# CREATE TABLE
 cursor.execute("""
 
 CREATE TABLE IF NOT EXISTS certificates (
@@ -48,6 +51,8 @@ CREATE TABLE IF NOT EXISTS certificates (
     token_id TEXT,
 
     lyrics_hash TEXT,
+
+    audio_hash TEXT,
 
     qr_link TEXT
 
@@ -92,7 +97,9 @@ def home():
         ).hexdigest()
 
         # SAVE MUSIC FILE
-        filename = music_file.filename
+        filename = secure_filename(
+            music_file.filename
+        )
 
         music_path = os.path.join(
             "uploads",
@@ -300,6 +307,29 @@ def home():
             lyrics_hash[:70]
         )
 
+        # AUDIO HASH
+        c.setFont(
+            "Helvetica-Bold",
+            12
+        )
+
+        c.drawString(
+            80,
+            355,
+            "AUDIO HASH:"
+        )
+
+        c.setFont(
+            "Helvetica",
+            8
+        )
+
+        c.drawString(
+            80,
+            340,
+            audio_hash[:70]
+        )
+
         # LYRICS SECTION
         c.setFont(
             "Helvetica-Bold",
@@ -308,7 +338,7 @@ def home():
 
         c.drawString(
             80,
-            350,
+            300,
             "REGISTERED LYRICS:"
         )
 
@@ -317,11 +347,11 @@ def home():
             10
         )
 
-        lyrics_y = 330
+        lyrics_y = 280
 
         lyrics_lines = lyrics.splitlines()
 
-        for line in lyrics_lines[:15]:
+        for line in lyrics_lines[:10]:
 
             c.drawString(
                 80,
@@ -390,11 +420,12 @@ def home():
             timestamp,
             token_id,
             lyrics_hash,
+            audio_hash,
             qr_link
 
         )
 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 
         """, (
 
@@ -404,6 +435,7 @@ def home():
             timestamp,
             token_id,
             lyrics_hash,
+            audio_hash,
             qr_link
 
         ))
@@ -419,9 +451,9 @@ def home():
     # LOAD WEBSITE
     return render_template("index.html")
 
+
 # VERIFICATION PAGE
 @app.route("/verify/<token>")
-
 def verify(token):
 
     cursor.execute(
@@ -519,6 +551,11 @@ def verify(token):
         {certificate[6]}
         </div>
 
+        <div class="item">
+        <strong>Audio Hash:</strong><br>
+        {certificate[7]}
+        </div>
+
         </div>
 
         </body>
@@ -546,6 +583,8 @@ def verify(token):
     </html>
 
     """
+
+
 # RUN SERVER
 if __name__ == "__main__":
     app.run(

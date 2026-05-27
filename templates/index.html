@@ -201,6 +201,39 @@ textarea:focus{
     border:2px solid #4CAF50;
 }
 
+.file-upload{
+
+    margin-bottom:20px;
+
+    background:#1e1e1e;
+
+    padding:18px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.file-upload label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    color:#aaa;
+
+    font-size:14px;
+}
+
+.file-upload input{
+
+    background:none;
+
+    padding:0;
+
+    margin:0;
+}
+
 button{
 
     width:100%;
@@ -289,7 +322,8 @@ Protection Rights Management
 <p>
 Protect your music, lyrics, intellectual property,
 creative ownership, and publishing rights with
-secure timestamp verification and digital certification.
+secure timestamp verification, audio fingerprinting,
+and digital certification.
 </p>
 
 <div class="features">
@@ -300,6 +334,10 @@ secure timestamp verification and digital certification.
 
 <div class="feature">
 ✅ Lyrics Fingerprinting & Hash Verification
+</div>
+
+<div class="feature">
+✅ Audio Upload & Audio Fingerprinting
 </div>
 
 <div class="feature">
@@ -322,12 +360,6 @@ secure timestamp verification and digital certification.
 Protect. Verify. Own.
 </div>
 
-<input
-type="file"
-name="music_file"
-accept=".mp3,.wav,.flac"
-required
->
 <form method="POST" enctype="multipart/form-data">
 
 <input
@@ -344,13 +376,27 @@ placeholder="Owner Name"
 required
 >
 
-
 <textarea
 name="lyrics"
 placeholder="Paste Lyrics Here"
 rows="10"
 required
 ></textarea>
+
+<div class="file-upload">
+
+<label>
+Upload Music File
+</label>
+
+<input
+type="file"
+name="music_file"
+accept=".mp3,.wav,.flac"
+required
+>
+
+</div>
 
 <button type="submit">
 Generate Protection Certificate
