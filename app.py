@@ -11,6 +11,8 @@ from reportlab.graphics import renderPDF
 from datetime import datetime
 
 import uuid
+import hashlib
+import sqlite3
 import os
 
 # FLASK APP
@@ -19,26 +21,69 @@ app = Flask(__name__)
 # CREATE OUTPUT FOLDER
 os.makedirs("output", exist_ok=True)
 
+# DATABASE SETUP
+conn = sqlite3.connect(
+    "prm_database.db",
+    check_same_thread=False
+)
+
+cursor = conn.cursor()
+
+cursor.execute("""
+
+CREATE TABLE IF NOT EXISTS certificates (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    song_name TEXT,
+
+    owner TEXT,
+
+    lyrics TEXT,
+
+    timestamp TEXT,
+
+    token_id TEXT,
+
+    lyrics_hash TEXT,
+
+    qr_link TEXT
+
+)
+
+""")
+
+conn.commit()
+
 
 # HOME PAGE
 @app.route("/", methods=["GET", "POST"])
 def home():
 
-    # WHEN USER SUBMITS FORM
+    # FORM SUBMITTED
     if request.method == "POST":
 
-        # GET FORM DATA
+        # FORM DATA
         song_name = request.form["song_name"]
+
         owner = request.form["owner"]
+
         qr_link = request.form["qr_link"]
+
+        lyrics = request.form["lyrics"]
 
         # AUTO TIMESTAMP
         timestamp = datetime.now().strftime(
             "%m/%d/%Y %I:%M %p"
         )
 
-        # AUTO TOKEN
+        # TOKEN ID
         token_id = uuid.uuid4().hex
+
+        # LYRICS HASH
+        lyrics_hash = hashlib.sha256(
+            lyrics.encode()
+        ).hexdigest()
 
         # SAFE FILE NAME
         safe_name = song_name.replace(" ", "_")
@@ -65,7 +110,7 @@ def home():
         )
 
         # BORDER
-        c.setStrokeColor(HexColor("#2E7D32"))
+        c.setStrokeColor(HexColor("#1B5E20"))
 
         c.setLineWidth(2)
 
@@ -88,22 +133,22 @@ def home():
         c.drawCentredString(
             PAGE_WIDTH / 2,
             720,
-            "MCG : Music Copyrights Generator"
+            "PRM : Protection Rights Management"
         )
 
-        # TITLE
+        # SUBTITLE
         c.setFont(
             "Helvetica-Bold",
-            20
+            18
         )
 
         c.drawCentredString(
             PAGE_WIDTH / 2,
-            650,
-            "CERTIFICATE OF MUSIC COPYRIGHT"
+            680,
+            "CERTIFICATE OF CREATIVE OWNERSHIP"
         )
 
-        # SONG NAME
+        # SONG TITLE
         c.setFont(
             "Helvetica-Bold",
             24
@@ -111,7 +156,7 @@ def home():
 
         c.drawCentredString(
             PAGE_WIDTH / 2,
-            560,
+            620,
             song_name
         )
 
@@ -122,53 +167,106 @@ def home():
         )
 
         description = (
-            "MCG certifies this work as registered "
-            "intellectual property ownership."
+            "PRM certifies this work as protected "
+            "creative intellectual property ownership."
         )
 
         c.drawCentredString(
             PAGE_WIDTH / 2,
-            500,
+            580,
             description
         )
 
         # OWNER
         c.setFont(
             "Helvetica-Bold",
-            16
+            15
         )
 
         c.drawString(
-            120,
-            380,
+            80,
+            520,
             f"OWNER: {owner}"
         )
 
         # TIMESTAMP
         c.drawString(
-            120,
-            340,
+            80,
+            490,
             f"TIMESTAMP: {timestamp}"
         )
 
-        # TOKEN LABEL
+        # TOKEN ID
         c.drawString(
-            120,
-            300,
+            80,
+            460,
             "TOKEN ID:"
         )
 
-        # TOKEN VALUE
+        c.setFont(
+            "Helvetica",
+            9
+        )
+
+        c.drawString(
+            80,
+            440,
+            token_id
+        )
+
+        # LYRICS HASH
+        c.setFont(
+            "Helvetica-Bold",
+            12
+        )
+
+        c.drawString(
+            80,
+            400,
+            "LYRICS HASH:"
+        )
+
+        c.setFont(
+            "Helvetica",
+            8
+        )
+
+        c.drawString(
+            80,
+            385,
+            lyrics_hash[:70]
+        )
+
+        # LYRICS SECTION
+        c.setFont(
+            "Helvetica-Bold",
+            13
+        )
+
+        c.drawString(
+            80,
+            350,
+            "REGISTERED LYRICS:"
+        )
+
         c.setFont(
             "Helvetica",
             10
         )
 
-        c.drawString(
-            120,
-            280,
-            token_id
-        )
+        lyrics_y = 330
+
+        lyrics_lines = lyrics.splitlines()
+
+        for line in lyrics_lines[:15]:
+
+            c.drawString(
+                80,
+                lyrics_y,
+                line[:90]
+            )
+
+            lyrics_y -= 14
 
         # QR CODE
         qr_code = qr.QrCodeWidget(qr_link)
@@ -176,16 +274,17 @@ def home():
         bounds = qr_code.getBounds()
 
         width = bounds[2] - bounds[0]
+
         height = bounds[3] - bounds[1]
 
         d = Drawing(
-            90,
-            90,
+            100,
+            100,
             transform=[
-                90.0 / width,
+                100.0 / width,
                 0,
                 0,
-                90.0 / height,
+                100.0 / height,
                 0,
                 0
             ]
@@ -196,8 +295,8 @@ def home():
         renderPDF.draw(
             d,
             c,
-            420,
-            240
+            430,
+            120
         )
 
         # FOOTER
@@ -205,19 +304,50 @@ def home():
 
         c.setFont(
             "Helvetica",
-            9
+            10
         )
 
         c.drawCentredString(
             PAGE_WIDTH / 2,
             40,
-            "MCG : Music Copyrights Generator"
+            "PRM : Protection Rights Management"
         )
 
         # SAVE PDF
         c.save()
 
-        # RETURN PDF DOWNLOAD
+        # SAVE TO DATABASE
+        cursor.execute("""
+
+        INSERT INTO certificates (
+
+            song_name,
+            owner,
+            lyrics,
+            timestamp,
+            token_id,
+            lyrics_hash,
+            qr_link
+
+        )
+
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+
+        """, (
+
+            song_name,
+            owner,
+            lyrics,
+            timestamp,
+            token_id,
+            lyrics_hash,
+            qr_link
+
+        ))
+
+        conn.commit()
+
+        # RETURN PDF
         return send_file(
             output_file,
             as_attachment=True
@@ -227,7 +357,7 @@ def home():
     return render_template("index.html")
 
 
-# RUN FLASK
+# RUN SERVER
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",

@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>
-MCG : Music Copyrights Generator
+PRM : Protection Rights Management
 </title>
 
 <style>
@@ -20,91 +20,181 @@ MCG : Music Copyrights Generator
 }
 
 body{
+
     font-family:Arial, sans-serif;
+
     background:#0f0f0f;
+
     color:white;
+
     min-height:100vh;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    overflow:hidden;
+    overflow:auto;
 }
 
 .background{
 
-    position:absolute;
+    position:fixed;
+
     width:100%;
     height:100%;
+
+    top:0;
+    left:0;
 
     background-image:url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f');
 
     background-size:cover;
+
     background-position:center;
 
-    filter:brightness(0.25);
+    filter:brightness(0.18);
 
     z-index:-1;
 }
 
+.wrapper{
+
+    width:100%;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+}
+
 .container{
 
-    width:450px;
+    width:1200px;
+
+    display:flex;
+
+    gap:40px;
+
+    align-items:center;
+}
+
+.left-panel{
+
+    flex:1;
+}
+
+.left-panel h1{
+
+    font-size:70px;
+
+    color:#4CAF50;
+
+    margin-bottom:20px;
+}
+
+.left-panel h2{
+
+    font-size:28px;
+
+    margin-bottom:25px;
+
+    color:white;
+}
+
+.left-panel p{
+
+    color:#cccccc;
+
+    font-size:18px;
+
+    line-height:1.7;
+
+    margin-bottom:30px;
+}
+
+.features{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.feature{
+
+    background:rgba(255,255,255,0.05);
+
+    padding:18px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.form-card{
+
+    width:500px;
 
     background:rgba(15,15,15,0.92);
 
     padding:40px;
 
-    border-radius:20px;
+    border-radius:24px;
 
     backdrop-filter:blur(10px);
 
     box-shadow:0 0 30px rgba(0,0,0,0.5);
 }
 
-h1{
+.form-card h3{
 
     text-align:center;
 
-    margin-bottom:10px;
-
     color:#4CAF50;
 
-    font-size:32px;
+    font-size:34px;
+
+    margin-bottom:10px;
 }
 
 .subtitle{
 
     text-align:center;
 
+    color:#aaa;
+
     margin-bottom:35px;
-
-    color:#cccccc;
-
-    font-size:15px;
 }
 
-input{
+input,
+textarea{
 
     width:100%;
 
-    padding:15px;
+    padding:16px;
 
     margin-bottom:20px;
 
     border:none;
 
-    border-radius:10px;
+    border-radius:12px;
 
-    background:#1f1f1f;
+    background:#1e1e1e;
 
     color:white;
 
     font-size:15px;
 }
 
-input:focus{
+textarea{
+
+    resize:none;
+}
+
+input:focus,
+textarea:focus{
 
     outline:none;
 
@@ -115,11 +205,11 @@ button{
 
     width:100%;
 
-    padding:16px;
+    padding:18px;
 
     border:none;
 
-    border-radius:10px;
+    border-radius:12px;
 
     background:#2E7D32;
 
@@ -137,6 +227,8 @@ button{
 button:hover{
 
     background:#43A047;
+
+    transform:translateY(-2px);
 }
 
 .footer{
@@ -145,9 +237,33 @@ button:hover{
 
     text-align:center;
 
-    color:#888;
+    color:#777;
 
     font-size:12px;
+}
+
+@media(max-width:1000px){
+
+    .container{
+
+        flex-direction:column;
+    }
+
+    .left-panel{
+
+        text-align:center;
+    }
+
+    .left-panel h1{
+
+        font-size:48px;
+    }
+
+    .form-card{
+
+        width:100%;
+        max-width:500px;
+    }
 }
 
 </style>
@@ -158,14 +274,52 @@ button:hover{
 
 <div class="background"></div>
 
+<div class="wrapper">
+
 <div class="container">
 
-<h1>
-MCG
-</h1>
+<div class="left-panel">
+
+<h1>PRM</h1>
+
+<h2>
+Protection Rights Management
+</h2>
+
+<p>
+Protect your music, lyrics, intellectual property,
+creative ownership, and publishing rights with
+secure timestamp verification and digital certification.
+</p>
+
+<div class="features">
+
+<div class="feature">
+✅ Secure Creative Ownership Registration
+</div>
+
+<div class="feature">
+✅ Lyrics Fingerprinting & Hash Verification
+</div>
+
+<div class="feature">
+✅ QR Certificate Authentication
+</div>
+
+<div class="feature">
+✅ Permanent Registry Storage
+</div>
+
+</div>
+
+</div>
+
+<div class="form-card">
+
+<h3>Register Work</h3>
 
 <div class="subtitle">
-Music Copyrights Generator
+Protect. Verify. Own.
 </div>
 
 <form method="POST">
@@ -173,7 +327,7 @@ Music Copyrights Generator
 <input
 type="text"
 name="song_name"
-placeholder="Song Name"
+placeholder="Song Title"
 required
 >
 
@@ -187,18 +341,29 @@ required
 <input
 type="text"
 name="qr_link"
-placeholder="QR Verification Link"
+placeholder="Verification URL"
 required
 >
 
+<textarea
+name="lyrics"
+placeholder="Paste Lyrics Here"
+rows="10"
+required
+></textarea>
+
 <button type="submit">
-Generate Certificate
+Generate Protection Certificate
 </button>
 
 </form>
 
 <div class="footer">
-MCG © 2026
+PRM © 2026
+</div>
+
+</div>
+
 </div>
 
 </div>
